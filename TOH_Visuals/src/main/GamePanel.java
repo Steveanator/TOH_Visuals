@@ -20,11 +20,14 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel {
 	
-	public int piecesAmount = 1;
-	public static final int WIDTH = 1080;
-	public static final int HEIGHT = 720;
+	public int piecesAmount = 3;
+	public static final int WIDTH = 1920;
+	public static final int HEIGHT = 1080;
 	private int s = (int) (GamePanel.WIDTH / 4);
 	private ArrayList<Piece> pieces;
+	
+	private int board[][];
+	
 	
 	public int targetPiece = -1;
 	public Point previousPoint;
@@ -45,6 +48,12 @@ public class GamePanel extends JPanel {
 		
 		pieces = new ArrayList<Piece>();
 		pieces.add(new Piece(1));
+		pieces.add(new Piece(2));
+		pieces.add(new Piece(3));
+		
+		board = new int[piecesAmount][3];
+		
+		intializeBoard();
 		
 		
 	}
@@ -56,19 +65,44 @@ public class GamePanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		
 		g2.setColor(new Color(92, 47, 3));
-		g2.fillRect(0, GamePanel.HEIGHT-50, GamePanel.WIDTH, 50);
-		g2.fillRoundRect(s, 200, 30, 500, 20, 20);
-		g2.fillRoundRect(s*2, 200, 30, 500, 20, 20);
-		g2.fillRoundRect(s*3, 200, 30, 500, 20, 20);
+		g2.fillRect(0, HEIGHT-50, WIDTH, 50);
+		g2.fillRoundRect(s, 200, 30, HEIGHT-200, 20, 20);
+		g2.fillRoundRect(s*2, 200, 30, HEIGHT-200, 20, 20);
+		g2.fillRoundRect(s*3, 200, 30, HEIGHT-200, 20, 20);
 		
 		for (int i = 0; i < pieces.size(); i++) {
-            g2.setColor(Color.red);
-            Shape shape = pieces.get(i);
-            
-            g2.fill(shape);
+			if(!(i == targetPiece)) {
+				Color color = pieces.get(i).getColor();
+            	Shape shape = pieces.get(i);
+            	g2.setColor(color);
+            	g2.fill(shape);
+			}
         }
 		
 		
+		// If a piece is being moved it will appear above all the other pieces
+		if(targetPiece != -1) {
+			Color color = pieces.get(targetPiece).getColor();
+        	Shape shape = pieces.get(targetPiece);
+        	g2.setColor(color);
+        	g2.fill(shape);
+		}
+	}
+	
+	private void intializeBoard() {
+		// Works maybe ???
+		int count = 1;
+		for(int row = 0; row < board.length; row++) {
+			for(int col = 0; col < board[row].length; col++) {
+				if(col == 0) {
+					board[row][col] = count;
+					count++;
+				}
+				else {
+					board[row][col] = 0;
+				}
+			}
+		}
 	}
 	
 	
@@ -87,6 +121,11 @@ public class GamePanel extends JPanel {
 	        }
 	        
 		}
+		
+		public void mouseReleased(MouseEvent e) {
+			targetPiece = -1;
+			repaint();
+		}
 	}
 	
 	
@@ -101,7 +140,22 @@ public class GamePanel extends JPanel {
 			//System.out.println(pieces.get(targetPiece).x);
 			pieces.get(targetPiece).y = (currentPoint.getY() - dY);
 			
-			//previousPoint = currentPoint;
+			
+			
+			// Adds bounds to the pieces
+			if(pieces.get(targetPiece).x + pieces.get(targetPiece).getWidth() > (double) WIDTH) {
+				pieces.get(targetPiece).x = (double) WIDTH - pieces.get(targetPiece).getWidth();
+			}
+			else if(pieces.get(targetPiece).x < 0) {
+				pieces.get(targetPiece).x = 0;
+			}
+			
+			if(pieces.get(targetPiece).y + pieces.get(targetPiece).getHeight() > (double) (HEIGHT-50)) {
+				pieces.get(targetPiece).y = (double) (HEIGHT - 50) - pieces.get(targetPiece).getHeight();
+			}
+			else if(pieces.get(targetPiece).y < 0) {
+				pieces.get(targetPiece).y = 0;
+			}
 			
 			repaint();
 		}

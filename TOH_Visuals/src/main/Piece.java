@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -11,7 +10,8 @@ public class Piece extends RoundRectangle2D {
 	private int value;
 	private Color color;
 	public double x,y;
-	private double WIDTH,HEIGHT;
+	private double WIDTH;
+	private double HEIGHT = 100;
 	private double arcHeight, arcWidth;
 	
 	
@@ -22,22 +22,18 @@ public class Piece extends RoundRectangle2D {
 			case 1:
 				color = Color.red;
 				WIDTH = 150;
-				HEIGHT = 100;
 				break;
 			case 2:
 				color = Color.green;
-				WIDTH = 300;
-				HEIGHT = 100;
+				WIDTH = 200;
 				break;
 			case 3:
 				color = Color.blue;
-				WIDTH = 300;
-				HEIGHT = 100;
+				WIDTH = 250;
 				break;
 			default:
 				color = Color.yellow;
 				WIDTH = 300;
-				HEIGHT = 100;
 		}
 		
 		x = 50;
@@ -45,6 +41,14 @@ public class Piece extends RoundRectangle2D {
 		
 		arcHeight = 30;
 		arcWidth = 30;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
+	
+	public int getValue() {
+		return value;
 	}
 
 	@Override
