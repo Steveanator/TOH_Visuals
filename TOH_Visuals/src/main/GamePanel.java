@@ -29,6 +29,8 @@ public class GamePanel extends JPanel {
 	public int targetPiece = -1;
 	public Point previousPoint;
 	
+	public double dX, dY;
+	
 	
 	public GamePanel() {
 		MouseListener mouseListener = new MouseListener();
@@ -77,6 +79,8 @@ public class GamePanel extends JPanel {
 	            if (pieces.get(i).getBounds2D().contains(e.getPoint())) {
 	                targetPiece = i;
 	                previousPoint = e.getPoint();
+	                dX = previousPoint.getX() - pieces.get(targetPiece).x;
+	                dY = previousPoint.getY()  - pieces.get(targetPiece).y;
 	                System.out.println("Mouse clicked: " + previousPoint.getX());
 	                System.out.println("Clicked shape " + (i+1));
 	            }
@@ -90,11 +94,14 @@ public class GamePanel extends JPanel {
 		
 		public void mouseDragged(MouseEvent e) {
 			Point currentPoint = e.getPoint();
-			pieces.get(targetPiece).x = (currentPoint.getX());
-			//System.out.println(pieces.get(targetPiece).x);
-			pieces.get(targetPiece).y = (currentPoint.getY());
+			System.out.println(dX);
 			
-			previousPoint = currentPoint;
+			
+			pieces.get(targetPiece).x = (currentPoint.getX() - dX);
+			//System.out.println(pieces.get(targetPiece).x);
+			pieces.get(targetPiece).y = (currentPoint.getY() - dY);
+			
+			//previousPoint = currentPoint;
 			
 			repaint();
 		}
