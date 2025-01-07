@@ -49,7 +49,6 @@ public class Piece extends RoundRectangle2D {
 
 	@Override
 	public Rectangle2D getBounds2D() {
-		// TODO Auto-generated method stub
 		Rectangle2D  rect = new Rectangle2D.Double(x, y, WIDTH, HEIGHT);
 		
 		return rect;
