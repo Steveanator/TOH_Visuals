@@ -9,20 +9,24 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 
 @SuppressWarnings("serial")
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements Runnable {
 	
-	public static int piecesAmount = 3;
+	public static final int FPS = 30;
+	public static int piecesAmount = 9;
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	public static final int pole_spacing = (int) (WIDTH / 4);
 	public static ArrayList<Piece> pieces;
 	private Board board;
+	
+	private Thread gameThread;
 	
 	
 	private int targetPiece = -1;
@@ -30,8 +34,12 @@ public class GamePanel extends JPanel {
 	
 	private double dX, dY;
 	
+	Shape button;
+	
 	
 	public GamePanel() {
+		gameThread = new Thread(this);
+		
 		MouseListener mouseListener = new MouseListener();
 		this.addMouseListener(mouseListener);
 		DragListener dragListener = new DragListener();
@@ -42,6 +50,8 @@ public class GamePanel extends JPanel {
 		this.setBackground(new Color(204, 102, 0));
 		this.setLayout(null);
 		
+		button = new Rectangle2D.Double(WIDTH - 50, 0, 50, 50);
+		
 		pieces = new ArrayList<Piece>();
 		for(int i = 1; i <= piecesAmount; i++) {
 			pieces.add(new Piece(i));
@@ -49,6 +59,8 @@ public class GamePanel extends JPanel {
 		
 		board = new Board();
 		board.setLocations();
+		
+		gameThread.start();
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -61,6 +73,9 @@ public class GamePanel extends JPanel {
 		g2.fillRoundRect(pole_spacing, 200, 30, HEIGHT-200, 20, 20);
 		g2.fillRoundRect(pole_spacing*2, 200, 30, HEIGHT-200, 20, 20);
 		g2.fillRoundRect(pole_spacing*3, 200, 30, HEIGHT-200, 20, 20);
+		
+		g2.setColor(Color.DARK_GRAY);
+		g2.fill(button);
 		
 		for (int i = 0; i < pieces.size(); i++) {
 			if(!(i == targetPiece)) {
@@ -81,10 +96,13 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
-	
 	private class MouseListener extends MouseAdapter {
 		
 		public void mousePressed(MouseEvent e) {
+			if(button.getBounds2D().contains(e.getPoint())) {
+				board.sudoSolve();
+			}
+			
 			for (int i = 0; i < pieces.size(); i++) {
 	            if (pieces.get(i).getBounds2D().contains(e.getPoint())) {
 	            	if(!(pieces.get(i).isMovable())) {
@@ -104,6 +122,7 @@ public class GamePanel extends JPanel {
 			}
 			targetPiece = -1;
 			board.setLocations();
+			System.out.println(board.isSolved(piecesAmount, 2));
 			repaint();
 		}
 	}
@@ -144,5 +163,31 @@ public class GamePanel extends JPanel {
 			repaint();
 			
 		}
+	}
+
+
+	@Override
+	public void run() {
+		// Game loops update and draw
+        double drawInterval = 1000000000/FPS;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+
+        while(gameThread != null) { // Checks to see if the game thread exists
+
+            currentTime = System.nanoTime();
+
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+
+            if(delta >= 1) { 
+                // Once delta has reached 1 it will reset to continue the game loop and update/repaint the page
+                repaint(); // Calls the paintComponent method
+                delta--;
+            }
+
+        }
+		
 	}
 }

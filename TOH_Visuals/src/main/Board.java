@@ -3,6 +3,7 @@ package main;
 public class Board {
 	private int board[][];
 	private double spacing = GamePanel.pole_spacing;
+	private int BOTTOMROW = GamePanel.piecesAmount -1;
 	
 	public Board() {
 		
@@ -64,18 +65,8 @@ public class Board {
 			return;
 		}
 		
-		int originalRow = -1;
-		int originalCol = -1;
-		
-		for(int row = 0; row < board.length; row++) {
-			for(int col = 0; col < board[row].length; col++) {
-				if(board[row][col] == pieceValue) {
-					originalRow = row;
-					originalCol = col;
-					break;
-				}
-			}
-		}
+		int originalRow = findRow(pieceValue);
+		int originalCol = findCol(pieceValue);
 		
 		if(originalRow < 0 || originalCol < 0) {
 			return;
@@ -84,6 +75,136 @@ public class Board {
 		// This actually moves the pieces
 		board[originalRow][originalCol] = 0;
 		board[newRow][newCol] = pieceValue;
+	}
+	
+	private int findRow(int piece) {
+		if(piece > GamePanel.piecesAmount || piece < 0) {
+			return -1;
+		}
+		
+		for(int row = 0; row < board.length; row++) {
+			for(int col = 0; col < board.length; col++) {
+				if(board[row][col] == piece) {
+					return row;
+				}
+			}
+		}
+		
+		return -1;
+	}
+	
+	private int findCol(int piece) {
+		if(piece > GamePanel.piecesAmount || piece <= 0) {
+			return -1;
+		}
+		
+		int row = findRow(piece);
+		for(int col = 0; col < board[0].length; col++) {
+			if(board[row][col] == piece) {
+				return col;
+			}
+		}
+		
+		return -1;
+	}
+	
+	// This is a function that the user cannot interact with as it will be used with the solve function
+	private void sudoMovePiece(int piece, int col) {
+		if(piece > GamePanel.piecesAmount || piece <= 0) {
+			System.out.println("Error Moving Piece: Piece cannot be moved or doesn't exist");
+			return;
+		}
+		if(col < 0 || col > 2) {
+			System.out.println("Error Moving Piece: Col Out of bounds");
+			return;
+		}
+		
+		for(int row = BOTTOMROW; row > 0; row--) {
+			if(sudoLegalMove(piece, row, col)) {
+				int originalRow = findRow(piece);
+				int originalCol = findCol(piece);
+				
+				board[row][col] = piece;
+				board[originalRow][originalCol] = 0;
+				return;
+			}
+		}
+		
+		System.out.println("Error Move Piece: Cannot move piece");
+	}
+	
+	private boolean sudoLegalMove(int piece, int row, int col) {
+		if(piece > GamePanel.piecesAmount || GamePanel.piecesAmount <= 0) {
+			System.out.println("Error Legal Move: Piece Cannot be moved or does not exist");
+			return false;
+		}
+		if(row > BOTTOMROW || row < 0) {
+			System.out.println("Error Legal Move: Row Out of bounds");
+			return false;
+		}
+		if( col < 0 || col > 2) {
+			System.out.println("Error Legal Move: Col Out of bounds");
+			return false;
+		}
+		
+		// Piece already there
+		if(board[row][col] == piece) {
+			return true;
+		}
+		int pieceRow = findRow(piece);
+		int pieceCol = findCol(piece);
+		
+		
+		// If top of the row
+		if(pieceRow != 0 && board[pieceRow-1][pieceCol] != 0) {
+			//System.out.println("Above it");
+			return false;
+		}
+		
+		
+		// Space is occupied
+		if(board[row][col] != 0) {
+			//System.out.println("Occupied");
+			return false;
+		}
+		
+		// If the piece below it is less than the piece we want to move, then it's an illegal move
+		if(row != BOTTOMROW && board[row+1][col] < piece) {
+			//System.out.println("Too low");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	// 
+	public void sudoSolve() {
+		int count = 1;
+		for(int row = 0; row < board.length; row++) {
+			for(int col = 0; col < board[row].length; col++) {
+				if(col ==2) {
+					board[row][col] = count;
+					count++;
+				}
+				else {
+					board[row][col] = 0;
+				}
+			}
+		}
+	}
+	
+	public boolean isSolved(int value, int pole) {
+		if(value > GamePanel.piecesAmount || value <= 0 || pole < 0 || pole > 2) {
+			System.out.println("Error: IsSolved Out of bounds");
+			return false;
+		}
+		if(board[value-1][pole] == value) {
+			if(value == 1) {
+				return true;
+			}
+			return isSolved(value-1, pole);
+		}
+		return false;
 	}
 	
 	public void setLocations() {
