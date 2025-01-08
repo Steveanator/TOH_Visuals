@@ -8,6 +8,7 @@ public class Piece extends RoundRectangle2D {
 	
 	
 	private int value;
+	private boolean movable;
 	private Color color;
 	public double x,y;
 	private double WIDTH;
@@ -19,6 +20,10 @@ public class Piece extends RoundRectangle2D {
 		this.value = value;
 		
 		switch (value) {
+			case 0:
+				color = Color.gray;
+				WIDTH = 0;
+				break;
 			case 1:
 				color = Color.red;
 				WIDTH = 150;
@@ -41,6 +46,15 @@ public class Piece extends RoundRectangle2D {
 		
 		arcHeight = 30;
 		arcWidth = 30;
+		movable = false;
+	}
+	
+	public void setMovable(boolean bool) {
+		movable = bool;
+	}
+	
+	public boolean isMovable() {
+		return movable;
 	}
 	
 	public Color getColor() {
