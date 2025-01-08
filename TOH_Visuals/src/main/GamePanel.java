@@ -6,18 +6,15 @@ import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Arc2D;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 
+@SuppressWarnings("serial")
 public class GamePanel extends JPanel {
 	
 	public static int piecesAmount = 3;
@@ -90,15 +87,15 @@ public class GamePanel extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			for (int i = 0; i < pieces.size(); i++) {
 	            if (pieces.get(i).getBounds2D().contains(e.getPoint())) {
-	            	if(pieces.get(i).isMovable()) {
-	            		targetPiece = i;
-		                previousPoint = e.getPoint();
-		                dX = previousPoint.getX() - pieces.get(targetPiece).x;
-		                dY = previousPoint.getY()  - pieces.get(targetPiece).y;
+	            	if(!(pieces.get(i).isMovable())) {
+	            		return;
 	            	}
+	            	targetPiece = i;
+	                previousPoint = e.getPoint();
+	                dX = previousPoint.getX() - pieces.get(targetPiece).x;
+	                dY = previousPoint.getY()  - pieces.get(targetPiece).y;
 	            }
 	        }
-	        
 		}
 		
 		public void mouseReleased(MouseEvent e) {
@@ -115,33 +112,37 @@ public class GamePanel extends JPanel {
 	private class DragListener extends MouseMotionAdapter {
 		
 		public void mouseDragged(MouseEvent e) {
-			if(pieces.get(targetPiece).isMovable()) {
-				Point currentPoint = e.getPoint();
-				
-				// Movey parts
-				pieces.get(targetPiece).x = (currentPoint.getX() - dX);
-				pieces.get(targetPiece).y = (currentPoint.getY() - dY);
-				
-				
-				
-				// Adds bounds to the pieces
-				if(pieces.get(targetPiece).x + pieces.get(targetPiece).getWidth() > (double) WIDTH) {
-					pieces.get(targetPiece).x = (double) WIDTH - pieces.get(targetPiece).getWidth();
-				}
-				else if(pieces.get(targetPiece).x < 0) {
-					pieces.get(targetPiece).x = 0;
-				}
-				
-				if(pieces.get(targetPiece).y + pieces.get(targetPiece).getHeight() > (double) (HEIGHT-50)) {
-					pieces.get(targetPiece).y = (double) (HEIGHT - 50) - pieces.get(targetPiece).getHeight();
-				}
-				else if(pieces.get(targetPiece).y < 0) {
-					pieces.get(targetPiece).y = 0;
-				}
-				
-				repaint();
+			if(targetPiece == -1) {
+				return;
 			}
-			return;
+			if(!(pieces.get(targetPiece).isMovable())) {
+				return;
+			}
+			Point currentPoint = e.getPoint();
+			
+			// Movey parts
+			pieces.get(targetPiece).x = (currentPoint.getX() - dX);
+			pieces.get(targetPiece).y = (currentPoint.getY() - dY);
+			
+			
+			
+			// Adds bounds to the pieces
+			if(pieces.get(targetPiece).x + pieces.get(targetPiece).getWidth() > (double) WIDTH) {
+				pieces.get(targetPiece).x = (double) WIDTH - pieces.get(targetPiece).getWidth();
+			}
+			else if(pieces.get(targetPiece).x < 0) {
+				pieces.get(targetPiece).x = 0;
+			}
+			
+			if(pieces.get(targetPiece).y + pieces.get(targetPiece).getHeight() > (double) (HEIGHT-50)) {
+				pieces.get(targetPiece).y = (double) (HEIGHT - 50) - pieces.get(targetPiece).getHeight();
+			}
+			else if(pieces.get(targetPiece).y < 0) {
+				pieces.get(targetPiece).y = 0;
+			}
+			
+			repaint();
+			
 		}
 	}
 }
