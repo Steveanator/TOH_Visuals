@@ -41,7 +41,6 @@ public class Board {
 		}
 		
 		if(newCol == -1) {
-			System.out.println("Error");
 			return;
 		}
 		
@@ -82,6 +81,7 @@ public class Board {
 			return;
 		}
 		
+		// This actually moves the pieces
 		board[originalRow][originalCol] = 0;
 		board[newRow][newCol] = pieceValue;
 	}
@@ -91,7 +91,7 @@ public class Board {
 			for(int col = board[row].length-1; col >= 0; col--) {
 				if(board[row][col] > 0) {
 					int index = board[row][col] - 1;
-					GamePanel.pieces.get(index).y = (GamePanel.HEIGHT - 50) - (100 * (board.length - row));
+					GamePanel.pieces.get(index).y = (GamePanel.HEIGHT - 50) - (GamePanel.pieces.get(index).getHeight() * (board.length - row));
 					GamePanel.pieces.get(index).x = spacing*(col+1) - (GamePanel.pieces.get(index).getWidth() - 30) / 2;
 					if(row == 0) {
 						GamePanel.pieces.get(index).setMovable(true);

@@ -12,41 +12,36 @@ public class Piece extends RoundRectangle2D {
 	private Color color;
 	public double x,y;
 	private double WIDTH;
-	private double HEIGHT = 100;
-	private double arcHeight, arcWidth;
+	private double HEIGHT = 50;
+	private double arcHeight = 30;
+	private double arcWidth = 30;
+	private Color colorGradient[] = new Color[9];
 	
 	
 	public Piece(int value) {
+		
+		intializeColorGradient();
+		
 		this.value = value;
 		
-		switch (value) {
-			case 0:
-				color = Color.gray;
-				WIDTH = 0;
-				break;
-			case 1:
-				color = Color.red;
-				WIDTH = 150;
-				break;
-			case 2:
-				color = Color.green;
-				WIDTH = 200;
-				break;
-			case 3:
-				color = Color.blue;
-				WIDTH = 250;
-				break;
-			default:
-				color = Color.yellow;
-				WIDTH = 300;
-		}
+		WIDTH = 60 + value*30;
+		color = colorGradient[value-1];
 		
-		x = 50;
-		y = 50;
-		
-		arcHeight = 30;
-		arcWidth = 30;
+		x = 0;
+		y = 0;
 		movable = false;
+	}
+	
+	private void intializeColorGradient() {
+		colorGradient[0] = new Color(255,0,0); // Red
+		colorGradient[1] = new Color(255,127,0); // Orange
+		colorGradient[2] = new Color(255,255,0); // Yellow
+		colorGradient[3] = new Color(0,255,0); // Green
+		colorGradient[4] = new Color(0,206,209); // Turquoise
+		colorGradient[5] = new Color(0,0,255); // Blue
+		colorGradient[6] = new Color(75,0,130); // Indigo
+		colorGradient[7] = new Color(148,0,211); // Violet
+		colorGradient[8] = new Color(255,20,147); // Pink
 	}
 	
 	public void setMovable(boolean bool) {

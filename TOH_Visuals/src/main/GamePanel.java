@@ -28,10 +28,10 @@ public class GamePanel extends JPanel {
 	private Board board;
 	
 	
-	public int targetPiece = -1;
-	public Point previousPoint;
+	private int targetPiece = -1;
+	private Point previousPoint;
 	
-	public double dX, dY;
+	private double dX, dY;
 	
 	
 	public GamePanel() {
@@ -46,19 +46,16 @@ public class GamePanel extends JPanel {
 		this.setLayout(null);
 		
 		pieces = new ArrayList<Piece>();
-		pieces.add(new Piece(1));
-		pieces.add(new Piece(2));
-		pieces.add(new Piece(3));
+		for(int i = 1; i <= piecesAmount; i++) {
+			pieces.add(new Piece(i));
+		}
 		
 		board = new Board();
 		board.setLocations();
-		
-		
 	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
 		
 		Graphics2D g2 = (Graphics2D) g;
 		
@@ -106,8 +103,6 @@ public class GamePanel extends JPanel {
 		
 		public void mouseReleased(MouseEvent e) {
 			if(targetPiece != -1 && pieces.get(targetPiece).isMovable()) {
-				board.printBoard();
-				System.out.println("-------");
 				board.movePiece(targetPiece + 1);
 			}
 			targetPiece = -1;
@@ -123,8 +118,8 @@ public class GamePanel extends JPanel {
 			if(pieces.get(targetPiece).isMovable()) {
 				Point currentPoint = e.getPoint();
 				
+				// Movey parts
 				pieces.get(targetPiece).x = (currentPoint.getX() - dX);
-				//System.out.println(pieces.get(targetPiece).x);
 				pieces.get(targetPiece).y = (currentPoint.getY() - dY);
 				
 				
