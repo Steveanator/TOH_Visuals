@@ -136,7 +136,7 @@ public class Board {
 		int pieceCol = findCol(piece);
 		
 		// Has piece on top
-		if(board[pieceRow-1][pieceCol] != 0) {
+		if(pieceRow != 0 && board[pieceRow-1][pieceCol] != 0) {
 			swapPoles(pieceCol);
 			solve(board[pieceRow-1][pieceCol], SOLUTIONPOLE);
 			swapPoles(pieceCol);
@@ -217,6 +217,8 @@ public class Board {
 				
 				board[row][col] = piece;
 				board[originalRow][originalCol] = 0;
+				
+				return;
 
 			}
 		}
