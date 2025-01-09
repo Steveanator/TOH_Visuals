@@ -83,7 +83,7 @@ public class Board {
 		}
 		
 		for(int row = 0; row < board.length; row++) {
-			for(int col = 0; col < board.length; col++) {
+			for(int col = 0; col < board[row].length; col++) {
 				if(board[row][col] == piece) {
 					return row;
 				}
