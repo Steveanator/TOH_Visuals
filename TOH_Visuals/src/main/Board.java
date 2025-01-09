@@ -5,6 +5,9 @@ public class Board {
 	private double spacing = GamePanel.pole_spacing;
 	private int BOTTOMROW = GamePanel.piecesAmount -1;
 	
+	private int SOLUTIONPOLE = 2;
+	private int OPPOSITEPOLE = 1;
+	
 	public Board() {
 		
 		board = new int[GamePanel.piecesAmount][3];
@@ -108,6 +111,91 @@ public class Board {
 		return -1;
 	}
 	
+	public boolean solve(int piece, int col) {
+		if(piece > GamePanel.piecesAmount || GamePanel.piecesAmount <= 0) {
+			System.out.println("Error Solver: Piece Out doesn't exist or unable to move");
+			return false;
+		}
+		if(col < 0 || col > 2) {
+			System.out.println("Error Solver: Col Out of bounds");
+			return false;
+		}
+		
+		if(isSolved(piece, col)) {
+			return true;
+		}
+		
+		if(piece == 1) {
+			sudoMovePiece(piece, col);
+			printBoard();
+			System.out.println("------");
+			return true;
+		}
+		
+		int pieceRow = findRow(piece);
+		int pieceCol = findCol(piece);
+		
+		// Has piece on top
+		if(board[pieceRow-1][pieceCol] != 0) {
+			swapPoles(pieceCol);
+			solve(board[pieceRow-1][pieceCol], SOLUTIONPOLE);
+			swapPoles(pieceCol);
+		}
+		
+		
+		sudoMovePiece(piece, col);
+		printBoard();
+		System.out.println("------");
+		solve(piece-1, SOLUTIONPOLE);
+		
+		
+		return true;
+	}
+	
+	private boolean swapPoles(int originPole) {
+		int POLETHREE = 2;
+		int POLETWO = 1;
+		int POLEONE = 0;
+		
+		switch (originPole) {
+		case 0: // POLE ONE
+			if(SOLUTIONPOLE == POLETHREE) {
+				SOLUTIONPOLE = POLETWO;
+				OPPOSITEPOLE = POLETHREE;
+			}
+			else {
+				SOLUTIONPOLE = POLETHREE;
+				OPPOSITEPOLE = POLETWO;
+			}
+			break;
+		case 1: // POLE TWO
+			if(SOLUTIONPOLE == POLETHREE) {
+				SOLUTIONPOLE = POLEONE;
+				OPPOSITEPOLE = POLETHREE;
+			}
+			else {
+				SOLUTIONPOLE = POLETHREE;
+				OPPOSITEPOLE = POLEONE;
+			}
+			break;
+		case 2: // POLE THREE
+			if(SOLUTIONPOLE == POLEONE) {
+				SOLUTIONPOLE = POLETWO;
+				OPPOSITEPOLE = POLEONE;
+			}
+			else {
+				SOLUTIONPOLE = POLEONE;
+				OPPOSITEPOLE = POLETWO;
+			}
+			break;
+		default:
+			System.out.println("Error Swapper: Could not find origin pole");
+			return false;
+		}
+		
+		return true;
+	}
+	
 	// This is a function that the user cannot interact with as it will be used with the solve function
 	private void sudoMovePiece(int piece, int col) {
 		if(piece > GamePanel.piecesAmount || piece <= 0) {
@@ -119,14 +207,17 @@ public class Board {
 			return;
 		}
 		
-		for(int row = BOTTOMROW; row > 0; row--) {
+		
+		
+		
+		for(int row = BOTTOMROW; row >= 0; row--) {
 			if(sudoLegalMove(piece, row, col)) {
 				int originalRow = findRow(piece);
 				int originalCol = findCol(piece);
 				
 				board[row][col] = piece;
 				board[originalRow][originalCol] = 0;
-				return;
+
 			}
 		}
 		

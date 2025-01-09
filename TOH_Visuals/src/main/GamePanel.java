@@ -18,15 +18,15 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
 	
-	public static final int FPS = 30;
-	public static int piecesAmount = 9;
+	public static int FPS = 30;
+	public static int piecesAmount = 3;
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	public static final int pole_spacing = (int) (WIDTH / 4);
 	public static ArrayList<Piece> pieces;
 	private Board board;
 	
-	private Thread gameThread;
+	public static Thread gameThread;
 	
 	
 	private int targetPiece = -1;
@@ -100,7 +100,7 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		public void mousePressed(MouseEvent e) {
 			if(button.getBounds2D().contains(e.getPoint())) {
-				board.sudoSolve();
+				board.solve(piecesAmount, 2);
 			}
 			
 			for (int i = 0; i < pieces.size(); i++) {
