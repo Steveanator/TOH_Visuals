@@ -117,12 +117,14 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 		
 		public void mouseReleased(MouseEvent e) {
-			if(targetPiece != -1 && pieces.get(targetPiece).isMovable()) {
-				board.movePiece(targetPiece + 1);
+			if(targetPiece != -1) {
+				if(pieces.get(targetPiece).isMovable()) {
+					board.movePiece(targetPiece + 1);
+				}
 			}
-			targetPiece = -1;
+			
 			board.setLocations();
-			System.out.println(board.isSolved(piecesAmount, 2));
+			targetPiece = -1;
 			repaint();
 		}
 	}

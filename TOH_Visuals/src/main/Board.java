@@ -81,7 +81,7 @@ public class Board {
 	}
 	
 	private int findRow(int piece) {
-		if(piece > GamePanel.piecesAmount || piece < 0) {
+		if(piece > GamePanel.piecesAmount || piece <= 0) {
 			return -1;
 		}
 		
@@ -112,7 +112,7 @@ public class Board {
 	}
 	
 	public boolean solve(int piece, int col) {
-		if(piece > GamePanel.piecesAmount || GamePanel.piecesAmount <= 0) {
+		if(piece > GamePanel.piecesAmount || piece <= 0) {
 			System.out.println("Error Solver: Piece Out doesn't exist or unable to move");
 			return false;
 		}
@@ -127,25 +127,48 @@ public class Board {
 		
 		if(piece == 1) {
 			sudoMovePiece(piece, col);
-			printBoard();
-			System.out.println("------");
 			return true;
 		}
 		
 		int pieceRow = findRow(piece);
 		int pieceCol = findCol(piece);
 		
+		if(pieceRow == -1 || pieceCol == -1) {
+			System.out.println("Error Solve: Could not find pieceRow or pieceCol");
+			return false;
+		}
+		
 		// Has piece on top
 		if(pieceRow != 0 && board[pieceRow-1][pieceCol] != 0) {
-			swapPoles(pieceCol);
+			if(!swapPoles(pieceCol)) {
+				System.out.println("Error Solve: Could not swap poles");
+				return false;
+			}
 			solve(board[pieceRow-1][pieceCol], SOLUTIONPOLE);
-			swapPoles(pieceCol);
+			if(!swapPoles(pieceCol)) {
+				System.out.println("Error Solve: Could not swap poles");
+				return false;
+			}
 		}
 		
 		
-		sudoMovePiece(piece, col);
-		printBoard();
-		System.out.println("------");
+		// If piece is occupying space
+		if(!sudoMovePiece(piece, col)) {
+			int annoyingPiece = board[BOTTOMROW][SOLUTIONPOLE];
+			if(!swapPoles(SOLUTIONPOLE)) {
+				System.out.println("Error Solve: Could not swap poles");
+				return false;
+			}
+			
+			solve(annoyingPiece, SOLUTIONPOLE);
+			if(!swapPoles(pieceCol)) {
+				System.out.println("Error Solve: Could not swap poles");
+				return false;
+			}
+			
+			System.out.println("Solution er : " + SOLUTIONPOLE);
+			solve(board[piece-1][pieceCol], SOLUTIONPOLE);
+		}
 		solve(piece-1, SOLUTIONPOLE);
 		
 		
@@ -197,14 +220,14 @@ public class Board {
 	}
 	
 	// This is a function that the user cannot interact with as it will be used with the solve function
-	private void sudoMovePiece(int piece, int col) {
+	private boolean sudoMovePiece(int piece, int col) {
 		if(piece > GamePanel.piecesAmount || piece <= 0) {
 			System.out.println("Error Moving Piece: Piece cannot be moved or doesn't exist");
-			return;
+			return false;
 		}
 		if(col < 0 || col > 2) {
 			System.out.println("Error Moving Piece: Col Out of bounds");
-			return;
+			return false;
 		}
 		
 		
@@ -218,12 +241,16 @@ public class Board {
 				board[row][col] = piece;
 				board[originalRow][originalCol] = 0;
 				
-				return;
+				printBoard();
+				System.out.println("------");
+				
+				return true;
 
 			}
 		}
 		
-		System.out.println("Error Move Piece: Cannot move piece");
+		//System.out.println("Error Move Piece: Cannot move piece");
+		return false;
 	}
 	
 	private boolean sudoLegalMove(int piece, int row, int col) {
