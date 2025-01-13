@@ -159,7 +159,7 @@ public class GamePanel extends JPanel {
 				pieces.get(targetPiece).y = 0;
 			}
 			
-			//repaint();
+			repaint();
 			
 		}
 	}
