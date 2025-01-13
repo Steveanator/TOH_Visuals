@@ -19,9 +19,9 @@ import javax.swing.JPanel;
 public class GamePanel extends JPanel {
 	
 	public static int FPS = 30;
-	public static int piecesAmount = 3;
+	public static int piecesAmount = 9;
 	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
+	public static final int HEIGHT = 940;
 	public static final int pole_spacing = (int) (WIDTH / 4);
 	public static ArrayList<Piece> pieces;
 	private Board board;
@@ -122,7 +122,7 @@ public class GamePanel extends JPanel {
 			
 			board.setLocations();
 			targetPiece = -1;
-			//repaint();
+			repaint();
 		}
 	}
 	
@@ -159,17 +159,18 @@ public class GamePanel extends JPanel {
 				pieces.get(targetPiece).y = 0;
 			}
 			
-			repaint();
+			//repaint();
 			
 		}
 	}
+	
 	public class Board {
 		private static int board[][];
 		private double spacing = GamePanel.pole_spacing;
 		private int BOTTOMROW = GamePanel.piecesAmount -1;
 		
 		private int SOLUTIONPOLE = 2;
-		private int OPPOSITEPOLE = 1;
+		//private int OPPOSITEPOLE = 1;
 		
 		public Board() {
 			
@@ -346,31 +347,31 @@ public class GamePanel extends JPanel {
 			case 0: // POLE ONE
 				if(SOLUTIONPOLE == POLETHREE) {
 					SOLUTIONPOLE = POLETWO;
-					OPPOSITEPOLE = POLETHREE;
+					//OPPOSITEPOLE = POLETHREE;
 				}
 				else {
 					SOLUTIONPOLE = POLETHREE;
-					OPPOSITEPOLE = POLETWO;
+					//OPPOSITEPOLE = POLETWO;
 				}
 				break;
 			case 1: // POLE TWO
 				if(SOLUTIONPOLE == POLETHREE) {
 					SOLUTIONPOLE = POLEONE;
-					OPPOSITEPOLE = POLETHREE;
+					//OPPOSITEPOLE = POLETHREE;
 				}
 				else {
 					SOLUTIONPOLE = POLETHREE;
-					OPPOSITEPOLE = POLEONE;
+					//OPPOSITEPOLE = POLEONE;
 				}
 				break;
 			case 2: // POLE THREE
 				if(SOLUTIONPOLE == POLEONE) {
 					SOLUTIONPOLE = POLETWO;
-					OPPOSITEPOLE = POLEONE;
+					//OPPOSITEPOLE = POLEONE;
 				}
 				else {
 					SOLUTIONPOLE = POLEONE;
-					OPPOSITEPOLE = POLETWO;
+					//OPPOSITEPOLE = POLETWO;
 				}
 				break;
 			default:
@@ -403,14 +404,11 @@ public class GamePanel extends JPanel {
 					board[row][col] = piece;
 					board[originalRow][originalCol] = 0;
 					
-					setLocations();
-					repaint();
 					
-					try {
-						Thread.sleep(190);
-					} catch(Exception e) {
-						
-					}
+					
+					
+					printBoard();
+					System.out.println("-------");
 					
 					return true;
 

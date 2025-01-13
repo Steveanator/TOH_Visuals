@@ -25,8 +25,12 @@ public class Piece extends RoundRectangle2D {
 		this.value = value;
 		
 		WIDTH = 60 + value*30;
-		color = colorGradient[value-1];
+		while(value > 9) {
+			value-=9;
+		}
 		
+		
+		color = colorGradient[value-1];
 		x = 0;
 		y = 0;
 		movable = false;
