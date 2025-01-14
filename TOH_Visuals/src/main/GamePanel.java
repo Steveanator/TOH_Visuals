@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 public class GamePanel extends JPanel {
 	
 	public static int FPS = 30;
-	public static int piecesAmount = 9;
+	public static int piecesAmount = 3;
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 940;
 	public static final int pole_spacing = (int) (WIDTH / 4);
@@ -97,6 +97,7 @@ public class GamePanel extends JPanel {
 		
 		public void mousePressed(MouseEvent e) {
 			if(button.getBounds2D().contains(e.getPoint())) {
+				//board.printBoard();
 				board.solve(piecesAmount, 2);
 			}
 			
@@ -169,8 +170,6 @@ public class GamePanel extends JPanel {
 		private double spacing = GamePanel.pole_spacing;
 		private int BOTTOMROW = GamePanel.piecesAmount -1;
 		
-		private int SOLUTIONPOLE = 2;
-		//private int OPPOSITEPOLE = 1;
 		
 		public Board() {
 			
@@ -246,6 +245,7 @@ public class GamePanel extends JPanel {
 		
 		private int findRow(int piece) {
 			if(piece > GamePanel.piecesAmount || piece <= 0) {
+				System.out.println("Find row: Piece out of bounds!");
 				return -1;
 			}
 			
@@ -257,11 +257,13 @@ public class GamePanel extends JPanel {
 				}
 			}
 			
+			System.out.println("Find row: Could not find piece!");
 			return -1;
 		}
 		
 		private int findCol(int piece) {
 			if(piece > GamePanel.piecesAmount || piece <= 0) {
+				System.out.println("Find col: Piece out of bounds!");
 				return -1;
 			}
 			
@@ -272,12 +274,14 @@ public class GamePanel extends JPanel {
 				}
 			}
 			
+			System.out.println("Find col: Could not find piece!");
 			return -1;
 		}
 		
 		public boolean solve(int piece, int col) {
+			System.out.println("Solving piece: " + piece);
 			if(piece > GamePanel.piecesAmount || piece <= 0) {
-				System.out.println("Error Solver: Piece Out doesn't exist or unable to move");
+				System.out.println("Error Solver: Piece " + piece + " doesn't exist or unable to move");
 				return false;
 			}
 			if(col < 0 || col > 2) {
@@ -290,8 +294,7 @@ public class GamePanel extends JPanel {
 			}
 			
 			if(piece == 1) {
-				sudoMovePiece(piece, col);
-				return true;
+				return sudoMovePiece(piece, col);
 			}
 			
 			int pieceRow = findRow(piece);
@@ -302,84 +305,38 @@ public class GamePanel extends JPanel {
 				return false;
 			}
 			
+			int SOLUTIONPOLE = col;
+			int OPPOSITEPOLE = -1;
+			for(int i = 0; i < 3; i++) {
+				if(i != SOLUTIONPOLE && i != pieceCol) {
+					OPPOSITEPOLE = i;
+				}
+			}
+			
+			System.out.println("Solution Pole: " + SOLUTIONPOLE);
+			System.out.println("OPPOSITEPOLE: " + OPPOSITEPOLE);
+			
 			// Has piece on top
 			if(pieceRow != 0 && board[pieceRow-1][pieceCol] != 0) {
-				if(!swapPoles(pieceCol)) {
-					System.out.println("Error Solve: Could not swap poles");
-					return false;
-				}
-				solve(board[pieceRow-1][pieceCol], SOLUTIONPOLE);
-				if(!swapPoles(pieceCol)) {
-					System.out.println("Error Solve: Could not swap poles");
-					return false;
-				}
+				System.out.println("Piece on top!");
+				solve(board[pieceRow-1][pieceCol], OPPOSITEPOLE);
 			}
 			
 			
 			// If piece is occupying space
-			if(!sudoMovePiece(piece, col)) {
-				int annoyingPiece = board[BOTTOMROW][SOLUTIONPOLE];
-				if(!swapPoles(SOLUTIONPOLE)) {
-					System.out.println("Error Solve: Could not swap poles");
-					return false;
+			if(!sudoMovePiece(piece, SOLUTIONPOLE)) {
+				int annoyingPieceRow = -1;
+				for(int row = BOTTOMROW; row >= 0; row--) {
+					if(board[row][SOLUTIONPOLE] < piece && board[row][SOLUTIONPOLE] != 0) {
+						annoyingPieceRow = row;
+					}
 				}
 				
-				solve(annoyingPiece, SOLUTIONPOLE);
-				if(!swapPoles(pieceCol)) {
-					System.out.println("Error Solve: Could not swap poles");
-					return false;
-				}
-				
-				System.out.println("Solution er : " + SOLUTIONPOLE);
-				solve(piece, SOLUTIONPOLE);
-			}
-			solve(piece-1, SOLUTIONPOLE);
-			
-			return true;
-		}
-		
-		private boolean swapPoles(int originPole) {
-			int POLETHREE = 2;
-			int POLETWO = 1;
-			int POLEONE = 0;
-			
-			switch (originPole) {
-			case 0: // POLE ONE
-				if(SOLUTIONPOLE == POLETHREE) {
-					SOLUTIONPOLE = POLETWO;
-					//OPPOSITEPOLE = POLETHREE;
-				}
-				else {
-					SOLUTIONPOLE = POLETHREE;
-					//OPPOSITEPOLE = POLETWO;
-				}
-				break;
-			case 1: // POLE TWO
-				if(SOLUTIONPOLE == POLETHREE) {
-					SOLUTIONPOLE = POLEONE;
-					//OPPOSITEPOLE = POLETHREE;
-				}
-				else {
-					SOLUTIONPOLE = POLETHREE;
-					//OPPOSITEPOLE = POLEONE;
-				}
-				break;
-			case 2: // POLE THREE
-				if(SOLUTIONPOLE == POLEONE) {
-					SOLUTIONPOLE = POLETWO;
-					//OPPOSITEPOLE = POLEONE;
-				}
-				else {
-					SOLUTIONPOLE = POLEONE;
-					//OPPOSITEPOLE = POLETWO;
-				}
-				break;
-			default:
-				System.out.println("Error Swapper: Could not find origin pole");
-				return false;
+				solve(board[annoyingPieceRow][SOLUTIONPOLE], OPPOSITEPOLE);
 			}
 			
-			return true;
+			
+			return solve(piece-1, SOLUTIONPOLE);
 		}
 		
 		// This is a function that the user cannot interact with as it will be used with the solve function
@@ -397,14 +354,16 @@ public class GamePanel extends JPanel {
 			
 			
 			for(int row = BOTTOMROW; row >= 0; row--) {
-				if(sudoLegalMove(piece, row, col)) {
+				if(board[row][col] == piece) {
+					System.out.println("Piece is already there!");
+					return true;
+				}
+				if(legalMove(piece, row, col)) {
 					int originalRow = findRow(piece);
 					int originalCol = findCol(piece);
 					
 					board[row][col] = piece;
 					board[originalRow][originalCol] = 0;
-					
-					
 					
 					
 					printBoard();
@@ -419,7 +378,7 @@ public class GamePanel extends JPanel {
 			return false;
 		}
 		
-		private boolean sudoLegalMove(int piece, int row, int col) {
+		private boolean legalMove(int piece, int row, int col) {
 			if(piece > GamePanel.piecesAmount || GamePanel.piecesAmount <= 0) {
 				System.out.println("Error Legal Move: Piece Cannot be moved or does not exist");
 				return false;
@@ -435,13 +394,14 @@ public class GamePanel extends JPanel {
 			
 			// Piece already there
 			if(board[row][col] == piece) {
-				return true;
+				System.out.println("Legal move: Piece is already there!");
+				return false;
 			}
 			int pieceRow = findRow(piece);
 			int pieceCol = findCol(piece);
 			
 			
-			// If top of the row
+			// If piece on top
 			if(pieceRow != 0 && board[pieceRow-1][pieceCol] != 0) {
 				//System.out.println("Above it");
 				return false;
