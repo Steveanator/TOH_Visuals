@@ -16,17 +16,16 @@ import javax.swing.JPanel;
 
 
 @SuppressWarnings("serial")
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends JPanel {
 	
 	public static int FPS = 30;
-	public static int piecesAmount = 3;
+	public static int piecesAmount = 21;
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	public static final int pole_spacing = (int) (WIDTH / 4);
 	public static ArrayList<Piece> pieces;
 	private Board board;
 	
-	public static Thread gameThread;
 	
 	
 	private int targetPiece = -1;
@@ -38,7 +37,6 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	
 	public GamePanel() {
-		gameThread = new Thread(this);
 		
 		MouseListener mouseListener = new MouseListener();
 		this.addMouseListener(mouseListener);
@@ -60,7 +58,6 @@ public class GamePanel extends JPanel implements Runnable {
 		board = new Board();
 		board.setLocations();
 		
-		gameThread.start();
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -100,7 +97,7 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		public void mousePressed(MouseEvent e) {
 			if(button.getBounds2D().contains(e.getPoint())) {
-				board.solve(piecesAmount, 2);
+				board.solve(piecesAmount-1, 2);
 			}
 			
 			for (int i = 0; i < pieces.size(); i++) {
@@ -117,9 +114,10 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 		
 		public void mouseReleased(MouseEvent e) {
+			Point mousePoint = e.getPoint();
 			if(targetPiece != -1) {
 				if(pieces.get(targetPiece).isMovable()) {
-					board.movePiece(targetPiece + 1);
+					board.movePiece(targetPiece, mousePoint);
 				}
 			}
 			
@@ -165,31 +163,5 @@ public class GamePanel extends JPanel implements Runnable {
 			repaint();
 			
 		}
-	}
-
-
-	@Override
-	public void run() {
-		// Game loops update and draw
-        double drawInterval = 1000000000/FPS;
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
-
-        while(gameThread != null) { // Checks to see if the game thread exists
-
-            currentTime = System.nanoTime();
-
-            delta += (currentTime - lastTime) / drawInterval;
-            lastTime = currentTime;
-
-            if(delta >= 1) { 
-                // Once delta has reached 1 it will reset to continue the game loop and update/repaint the page
-                repaint(); // Calls the paintComponent method
-                delta--;
-            }
-
-        }
-		
 	}
 }
